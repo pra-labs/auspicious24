@@ -3,10 +3,10 @@
 import { useState } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
-import { Product } from '@/lib/catalog';
-import { formatINR } from '@/lib/catalog';
+import { Product, formatINR, cleanCardDescription, getProductMetadataPill } from '@/lib/catalog';
 import { getWhatsAppOrderUrl, getWhatsAppShareUrl } from '@/lib/whatsapp';
-import { MessageCircle, Eye, Share2, Sparkles } from 'lucide-react';
+import { useFestiveTray } from '@/context/FestiveTrayContext';
+import { MessageCircle, Eye, Share2, Plus, ShoppingBag, Check } from 'lucide-react';
 
 interface ProductCardProps {
   product: Product;
@@ -15,11 +15,13 @@ interface ProductCardProps {
 
 export default function ProductCard({ product, onQuickView }: ProductCardProps) {
   const [selectedVariantIdx, setSelectedVariantIdx] = useState(0);
-  const [copied, setCopied] = useState(false);
+  const [justAdded, setJustAdded] = useState(false);
+  const { addItem } = useFestiveTray();
 
-  const selectedVariant = product.variants && product.variants.length > 0
-    ? product.variants[selectedVariantIdx]
-    : undefined;
+  const selectedVariant =
+    product.variants && product.variants.length > 0
+      ? product.variants[selectedVariantIdx]
+      : undefined;
 
   const activePrice = selectedVariant ? selectedVariant.price : product.price;
   const activeOriginalPrice = selectedVariant?.compare_at_price || product.compare_at_price;
@@ -35,12 +37,21 @@ export default function ProductCard({ product, onQuickView }: ProductCardProps) 
     productHandle: product.handle,
   });
 
+  const handleAddToTray = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    addItem(product, selectedVariant);
+    setJustAdded(true);
+    setTimeout(() => setJustAdded(false), 1800);
+  };
+
   const handleShare = async (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
-    const productUrl = typeof window !== 'undefined'
-      ? `${window.location.origin}/product/${product.handle}`
-      : `https://auspicious24.vercel.app/product/${product.handle}`;
+    const productUrl =
+      typeof window !== 'undefined'
+        ? `${window.location.origin}/product/${product.handle}`
+        : `https://auspicious24.vercel.app/product/${product.handle}`;
 
     if (navigator.share) {
       try {
@@ -59,9 +70,12 @@ export default function ProductCard({ product, onQuickView }: ProductCardProps) 
     window.open(shareUrl, '_blank', 'noopener,noreferrer');
   };
 
+  const metadataPill = (product as any).specsSummary || getProductMetadataPill(product);
+  const cleanedDesc = cleanCardDescription(product.description);
+
   return (
     <div className="group flex flex-col relative bg-white border border-[#E8DEC9]/70 rounded-md overflow-hidden hover:shadow-xl hover:border-[#D4AF37]/60 transition-all duration-300">
-      {/* Product Image Frame (3/4 Aspect Ratio like Savah) */}
+      {/* Product Image Frame (3/4 Aspect Ratio) */}
       <div className="relative aspect-[3/4] w-full overflow-hidden bg-[#FAF7F2]">
         <Link href={`/product/${product.handle}`} className="block w-full h-full">
           <Image
@@ -145,7 +159,7 @@ export default function ProductCard({ product, onQuickView }: ProductCardProps) 
             </h3>
           </Link>
           <p className="text-[11px] text-stone-500 line-clamp-1 leading-relaxed">
-            {product.description}
+            {cleanedDesc || product.title}
           </p>
         </div>
 
@@ -169,36 +183,71 @@ export default function ProductCard({ product, onQuickView }: ProductCardProps) 
           </div>
         )}
 
-        {/* Pricing & WhatsApp Direct Action */}
-        <div className="pt-2 border-t border-[#E8DEC9]/50 flex items-center justify-between gap-2">
-          <div>
-            <div className="flex items-baseline gap-1.5">
-              <span className="font-serif text-base sm:text-lg font-bold text-[#0F2E22]">
-                {formatINR(activePrice)}
-              </span>
-              {activeOriginalPrice && activeOriginalPrice > activePrice && (
-                <span className="text-xs text-stone-400 line-through">
-                  {formatINR(activeOriginalPrice)}
+        {/* Compact Metadata Pill right above Price */}
+        <div className="pt-2 border-t border-[#E8DEC9]/50 space-y-2">
+          {metadataPill && (
+            <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-[#FAF7F2] border border-[#E8DEC9] text-[10px] uppercase tracking-wider text-[#0F2E22] font-semibold">
+              <span className="w-1.5 h-1.5 rounded-full bg-[#D4AF37]" />
+              <span>{metadataPill}</span>
+            </div>
+          )}
+
+          {/* Pricing & Split Dual CTAs: Add to Tray + Order on WhatsApp */}
+          <div className="flex items-center justify-between gap-2">
+            <div>
+              <div className="flex items-baseline gap-1.5">
+                <span className="font-serif text-base sm:text-lg font-bold text-[#0F2E22]">
+                  {formatINR(activePrice)}
+                </span>
+                {activeOriginalPrice && activeOriginalPrice > activePrice && (
+                  <span className="text-xs text-stone-400 line-through">
+                    {formatINR(activeOriginalPrice)}
+                  </span>
+                )}
+              </div>
+              {discountPercent && (
+                <span className="text-[10px] text-emerald-700 font-semibold uppercase">
+                  {discountPercent}% Off
                 </span>
               )}
             </div>
-            {discountPercent && (
-              <span className="text-[10px] text-emerald-700 font-semibold uppercase">
-                {discountPercent}% Off
-              </span>
-            )}
-          </div>
 
-          <a
-            href={orderUrl}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="inline-flex items-center gap-1.5 px-3 py-2 bg-[#25D366] hover:bg-[#20BA5A] text-white text-xs font-semibold rounded-sm transition-colors shadow-xs hover:shadow-md shrink-0"
-            title="Order directly on WhatsApp"
-          >
-            <MessageCircle className="w-3.5 h-3.5 fill-current" />
-            <span className="hidden xs:inline">Order</span>
-          </a>
+            {/* Action Buttons */}
+            <div className="flex items-center gap-1.5">
+              {/* Add to Festive Tray Button */}
+              <button
+                type="button"
+                onClick={handleAddToTray}
+                className={`p-2 rounded-sm border transition-all text-xs font-semibold flex items-center gap-1 ${
+                  justAdded
+                    ? 'bg-[#0F2E22] text-[#D4AF37] border-[#0F2E22]'
+                    : 'bg-white hover:bg-[#FAF7F2] text-stone-700 hover:text-[#0F2E22] border-[#E8DEC9] hover:border-[#D4AF37]'
+                }`}
+                title="Add to Festive Tray"
+                aria-label={`Add ${product.title} to Festive Tray`}
+              >
+                {justAdded ? (
+                  <Check className="w-3.5 h-3.5 text-[#D4AF37]" />
+                ) : (
+                  <Plus className="w-3.5 h-3.5" />
+                )}
+                <ShoppingBag className="w-3.5 h-3.5 hidden xl:inline" />
+                <span className="hidden xl:inline text-[11px]">Tray</span>
+              </button>
+
+              {/* Order on WhatsApp Primary CTA */}
+              <a
+                href={orderUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-1.5 px-2.5 sm:px-3 py-2 bg-[#25D366] hover:bg-[#20BA5A] text-white text-[11px] sm:text-xs font-bold rounded-sm transition-all shadow-xs hover:shadow-md shrink-0"
+                title="Order on WhatsApp"
+              >
+                <MessageCircle className="w-3.5 h-3.5 fill-current shrink-0" />
+                <span className="whitespace-nowrap">Order on WhatsApp</span>
+              </a>
+            </div>
+          </div>
         </div>
       </div>
     </div>

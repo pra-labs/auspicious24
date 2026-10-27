@@ -3,9 +3,10 @@
 import React, { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { X, MessageCircle, ExternalLink, Check, Sparkles, ShieldCheck } from "lucide-react";
-import { Product, ProductVariant } from "@/lib/catalog";
+import { X, MessageCircle, ExternalLink, Check, Sparkles, ShieldCheck, ShoppingBag, Plus } from "lucide-react";
+import { Product, ProductVariant, cleanCardDescription, getProductMetadataPill } from "@/lib/catalog";
 import { getWhatsAppOrderUrl, getWhatsAppShareUrl } from "@/lib/whatsapp";
+import { useFestiveTray } from "@/context/FestiveTrayContext";
 
 interface QuickViewModalProps {
   product: Product;
@@ -13,6 +14,8 @@ interface QuickViewModalProps {
 }
 
 export default function QuickViewModal({ product, onClose }: QuickViewModalProps) {
+  const { addItem } = useFestiveTray();
+  const [justAdded, setJustAdded] = useState(false);
   const [selectedImageIndex, setSelectedImageIndex] = useState(0);
   const [selectedVariant, setSelectedVariant] = useState<ProductVariant | undefined>(
     product.variants && product.variants.length > 0 ? product.variants[0] : undefined
@@ -180,16 +183,44 @@ export default function QuickViewModal({ product, onClose }: QuickViewModalProps
           </div>
 
           {/* Action CTAs */}
-          <div className="pt-4 border-t border-stone-200 space-y-3">
-            <a
-              href={orderUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="w-full flex items-center justify-center gap-2.5 bg-[#25D366] hover:bg-[#20BA5A] text-white py-3 rounded-2xl text-sm font-bold shadow-md transition-all active:scale-95"
-            >
-              <MessageCircle className="w-5 h-5 fill-white shrink-0" />
-              <span>Order Now on WhatsApp</span>
-            </a>
+          <div className="pt-4 border-t border-stone-200 space-y-2.5">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+              <button
+                type="button"
+                onClick={() => {
+                  addItem(product, selectedVariant);
+                  setJustAdded(true);
+                  setTimeout(() => setJustAdded(false), 1800);
+                }}
+                className={`flex items-center justify-center gap-2 py-3 px-4 rounded-xl text-xs sm:text-sm font-bold border transition-all ${
+                  justAdded
+                    ? 'bg-[#0F2E22] text-[#D4AF37] border-[#0F2E22]'
+                    : 'bg-white hover:bg-stone-50 text-stone-800 border-stone-300 hover:border-[#D4AF37]'
+                }`}
+              >
+                {justAdded ? (
+                  <>
+                    <Check className="w-4 h-4 text-[#D4AF37]" />
+                    <span>Added to Tray!</span>
+                  </>
+                ) : (
+                  <>
+                    <ShoppingBag className="w-4 h-4 text-[#D4AF37]" />
+                    <span>Add to Festive Tray</span>
+                  </>
+                )}
+              </button>
+
+              <a
+                href={orderUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center justify-center gap-2 bg-[#25D366] hover:bg-[#20BA5A] text-white py-3 px-4 rounded-xl text-xs sm:text-sm font-bold shadow-md transition-all active:scale-95"
+              >
+                <MessageCircle className="w-4 h-4 fill-white shrink-0" />
+                <span>Order on WhatsApp</span>
+              </a>
+            </div>
 
             <div className="flex items-center justify-between text-xs text-stone-500 pt-1">
               <Link

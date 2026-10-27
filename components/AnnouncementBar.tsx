@@ -4,12 +4,21 @@ import { useState, useEffect } from 'react';
 import Link from 'next/link';
 
 const announcements = [
-  { text: 'Diwali Shopping Exhibition 2026 • B21, South City 1, Gurgaon • 11 AM – 9 PM', link: '#exhibition' },
-  { text: 'Handpicked Grade-A California Almonds, Afghan Anjeer & Medjool Dates', link: null },
-  { text: 'Bespoke Corporate Hampers & Pan-India Gifting with Monogrammed Packaging', link: '#corporate' },
+  {
+    text: 'Missed our South City 1 Exhibition? Order online for Express Gurgaon Delivery or book a private studio visit at B21.',
+    link: '#exhibition',
+  },
+  {
+    text: 'Handpicked Grade-A California Almonds, Afghan Anjeer & Medjool Dates',
+    link: '#catalog',
+  },
+  {
+    text: 'Bespoke Corporate Hampers & Pan-India Gifting with Monogrammed Packaging',
+    link: '#corporate',
+  },
   {
     text: 'Direct Inquiries & Custom Assembly on WhatsApp (+91 98998 75665)',
-    link: 'https://wa.me/919899875665?text=Hello%20Auspicious24%2C%20I%20have%20an%20inquiry%20regarding%20festive%20gifting.',
+    link: 'https://wa.me/919899875665?text=Hello%20Auspicious24%2C%20I%20have%20an%20inquiry%20regarding%20festive%20gifting%20or%20booking%20a%20studio%20visit.',
   },
 ];
 

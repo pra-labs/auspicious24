@@ -7,8 +7,6 @@ import CatalogExplorer from "./CatalogExplorer";
 import ExhibitionBanner from "./ExhibitionBanner";
 import CorporateGiftingSection from "./CorporateGiftingSection";
 import BrandStorySection from "./BrandStorySection";
-import FloatingWhatsApp from "./FloatingWhatsApp";
-import Footer from "./Footer";
 import { Product } from "@/lib/catalog";
 
 interface HomePageClientProps {
@@ -28,8 +26,6 @@ export default function HomePageClient({ products }: HomePageClientProps) {
         <CorporateGiftingSection />
         <BrandStorySection />
       </main>
-      <Footer />
-      <FloatingWhatsApp />
     </div>
   );
 }

@@ -15,9 +15,12 @@ import {
   Calendar,
   Gift,
   Phone,
+  ShoppingBag,
+  Plus,
 } from "lucide-react";
-import { Product, ProductVariant } from "@/lib/catalog";
+import { Product, ProductVariant, getProductMetadataPill } from "@/lib/catalog";
 import { getWhatsAppOrderUrl, getWhatsAppShareUrl, FORMATTED_PHONE_NUMBER } from "@/lib/whatsapp";
+import { useFestiveTray } from "@/context/FestiveTrayContext";
 import Header from "@/components/Header";
 import ProductCard from "@/components/ProductCard";
 
@@ -30,6 +33,8 @@ export default function ProductDetailView({
   product,
   relatedProducts,
 }: ProductDetailViewProps) {
+  const { addItem } = useFestiveTray();
+  const [justAdded, setJustAdded] = useState(false);
   const [selectedImageIndex, setSelectedImageIndex] = useState(0);
   const [selectedVariant, setSelectedVariant] = useState<ProductVariant | undefined>(
     product.variants && product.variants.length > 0 ? product.variants[0] : undefined
@@ -243,20 +248,48 @@ export default function ProductDetailView({
               </div>
             </div>
 
-            {/* Primary Action Button: Order on WhatsApp */}
+            {/* Primary Action Buttons: Add to Tray + Order on WhatsApp */}
             <div className="pt-6 border-t border-stone-200 space-y-3">
-              <a
-                href={orderUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="w-full flex items-center justify-center gap-3 bg-[#25D366] hover:bg-[#20BA5A] text-white py-4 rounded-2xl text-base font-bold shadow-lg hover:shadow-xl transition-all active:scale-[0.98]"
-              >
-                <MessageCircle className="w-6 h-6 fill-white shrink-0" />
-                <span>Order Now on WhatsApp (+91 98998 75665)</span>
-              </a>
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                <button
+                  type="button"
+                  onClick={() => {
+                    addItem(product, selectedVariant);
+                    setJustAdded(true);
+                    setTimeout(() => setJustAdded(false), 1800);
+                  }}
+                  className={`sm:col-span-1 flex items-center justify-center gap-2 py-4 px-4 rounded-2xl text-sm font-bold border transition-all ${
+                    justAdded
+                      ? 'bg-[#0F2E22] text-[#D4AF37] border-[#0F2E22]'
+                      : 'bg-white hover:bg-stone-50 text-stone-800 border-stone-300 hover:border-[#D4AF37]'
+                  }`}
+                >
+                  {justAdded ? (
+                    <>
+                      <Check className="w-5 h-5 text-[#D4AF37]" />
+                      <span>In Festive Tray!</span>
+                    </>
+                  ) : (
+                    <>
+                      <ShoppingBag className="w-5 h-5 text-[#D4AF37]" />
+                      <span>Add to Tray</span>
+                    </>
+                  )}
+                </button>
+
+                <a
+                  href={orderUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="sm:col-span-2 flex items-center justify-center gap-2.5 bg-[#25D366] hover:bg-[#20BA5A] text-white py-4 px-4 rounded-2xl text-base font-bold shadow-lg hover:shadow-xl transition-all active:scale-[0.98]"
+                >
+                  <MessageCircle className="w-5 h-5 fill-white shrink-0" />
+                  <span>Order on WhatsApp</span>
+                </a>
+              </div>
 
               <p className="text-center text-xs text-stone-500">
-                ⚡ Instant WhatsApp Chat. Our team verifies immediate availability and arranges express courier or Gurgaon pick-up.
+                ⚡ Instant WhatsApp Concierge. Our team verifies immediate stock and arranges express courier or Gurgaon studio pick-up.
               </p>
             </div>
           </div>

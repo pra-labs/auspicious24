@@ -1,6 +1,7 @@
 import { notFound } from "next/navigation";
 import { Metadata } from "next";
-import { getAllProducts, getProductByHandle, getRelatedProducts } from "@/lib/catalog";
+import { getAllProducts, getProductByHandle, getRelatedProducts, cleanCardDescription } from "@/lib/catalog";
+import { generateProductJsonLd } from "@/lib/seo";
 import ProductDetailView from "@/components/ProductDetailView";
 
 interface PageProps {
@@ -25,12 +26,14 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
     };
   }
 
+  const cleanDesc = cleanCardDescription(product.description, 160);
+
   return {
     title: `${product.title} • Auspicious24 Festive Catalog`,
-    description: product.description.slice(0, 160),
+    description: cleanDesc,
     openGraph: {
       title: `${product.title} | Auspicious24`,
-      description: product.description.slice(0, 160),
+      description: cleanDesc,
       images: product.images[0] ? [product.images[0]] : [],
     },
   };
@@ -44,6 +47,15 @@ export default function ProductDetailPage({ params }: PageProps) {
   }
 
   const related = getRelatedProducts(product, 4);
+  const jsonLd = generateProductJsonLd(product);
 
-  return <ProductDetailView product={product} relatedProducts={related} />;
+  return (
+    <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
+      <ProductDetailView product={product} relatedProducts={related} />
+    </>
+  );
 }

@@ -3,6 +3,11 @@ import { Playfair_Display, Plus_Jakarta_Sans } from "next/font/google";
 import "./globals.css";
 import FloatingWhatsApp from "@/components/FloatingWhatsApp";
 import Footer from "@/components/Footer";
+import { FestiveTrayProvider } from "@/context/FestiveTrayContext";
+import FestiveTrayDrawer from "@/components/FestiveTrayDrawer";
+import FloatingFestiveTrayBadge from "@/components/FloatingFestiveTrayBadge";
+
+import { siteConfig } from "@/lib/seo";
 
 const playfair = Playfair_Display({
   subsets: ["latin"],
@@ -17,7 +22,7 @@ const jakarta = Plus_Jakarta_Sans({
 });
 
 export const metadata: Metadata = {
-  metadataBase: new URL("https://auspicious24.com"),
+  metadataBase: new URL(siteConfig.url),
   title: "Auspicious24 • Luxury Dry Fruits, Festive Hampers & Designer Apparel",
   description:
     "Curated festive gifting by Auspicious24: Imperial dry fruits, royal hampers, Sifti Creations designer suits & fabrics, and Güzel Jewellery. Direct WhatsApp ordering & Gurgaon exhibition.",
@@ -48,9 +53,13 @@ export default function RootLayout({
   return (
     <html lang="en" className={`${playfair.variable} ${jakarta.variable} scroll-smooth`}>
       <body className="bg-cream-50 text-stone-900 font-sans antialiased min-h-screen flex flex-col justify-between">
-        <main className="flex-1">{children}</main>
-        <Footer />
-        <FloatingWhatsApp />
+        <FestiveTrayProvider>
+          <main className="flex-1">{children}</main>
+          <Footer />
+          <FloatingWhatsApp />
+          <FloatingFestiveTrayBadge />
+          <FestiveTrayDrawer />
+        </FestiveTrayProvider>
       </body>
     </html>
   );

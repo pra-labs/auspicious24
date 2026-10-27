@@ -19,8 +19,8 @@ export default function BrandPillars() {
     },
     {
       icon: ShieldCheck,
-      title: 'Exhibition Verified Heritage',
-      desc: 'Visit our flagship festive pop-up at South City 1, Gurgaon to experience live sampling & personalized curation.',
+      title: 'Studio & Express Delivery',
+      desc: 'Private studio appointments at B21 South City 1, Gurgaon with same-day NCR delivery & pan-India express courier.',
     },
   ];
 
