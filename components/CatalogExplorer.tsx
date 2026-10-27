@@ -7,14 +7,17 @@ import QuickViewModal from "./QuickViewModal";
 import { Search, SlidersHorizontal, ArrowUpDown, X, Sparkles, Filter } from "lucide-react";
 
 interface CatalogExplorerProps {
-  initialProducts: Product[];
+  initialProducts?: Product[];
+  products?: Product[];
   initialCategory?: string;
 }
 
 export default function CatalogExplorer({
   initialProducts,
+  products: propProducts,
   initialCategory = "All",
 }: CatalogExplorerProps) {
+  const allProducts = propProducts || initialProducts || [];
   const [selectedCategory, setSelectedCategory] = useState<string>(initialCategory);
   const [selectedBrand, setSelectedBrand] = useState<string>("All");
   const [searchQuery, setSearchQuery] = useState<string>("");
@@ -22,13 +25,13 @@ export default function CatalogExplorer({
   const [quickViewProduct, setQuickViewProduct] = useState<Product | null>(null);
 
   const brands = useMemo(() => {
-    const list = Array.from(new Set(initialProducts.map((p) => p.brand)));
+    const list = Array.from(new Set(allProducts.map((p) => p.brand)));
     return ["All", ...list];
-  }, [initialProducts]);
+  }, [allProducts]);
 
   // Filter & sort products
   const filteredProducts = useMemo(() => {
-    return initialProducts
+    return allProducts
       .filter((p) => {
         // Category filter
         if (selectedCategory !== "All" && p.category !== selectedCategory) {
@@ -42,7 +45,7 @@ export default function CatalogExplorer({
         if (searchQuery.trim()) {
           const q = searchQuery.toLowerCase().trim();
           const matchTitle = p.title.toLowerCase().includes(q);
-          const matchDesc = p.shortDescription.toLowerCase().includes(q);
+          const matchDesc = (p.description || '').toLowerCase().includes(q);
           const matchBrand = p.brand.toLowerCase().includes(q);
           const matchCat = p.category.toLowerCase().includes(q);
           if (!matchTitle && !matchDesc && !matchBrand && !matchCat) {
@@ -59,14 +62,12 @@ export default function CatalogExplorer({
           return b.price - a.price;
         }
         if (sortBy === "bestseller") {
-          const aRank = a.badge === "Best Seller" ? 2 : a.badge === "Royal Selection" ? 1 : 0;
-          const bRank = b.badge === "Best Seller" ? 2 : b.badge === "Royal Selection" ? 1 : 0;
+          const aRank = a.badge === "Best Seller" ? 2 : a.badge === "Festive Special" ? 1 : 0;
+          const bRank = b.badge === "Best Seller" ? 2 : b.badge === "Festive Special" ? 1 : 0;
           return bRank - aRank;
         }
-        // Featured default
-        const aFeatured = a.featured ? 1 : 0;
-        const bFeatured = b.featured ? 1 : 0;
-        return bFeatured - aFeatured;
+        // Default
+        return (b.badge ? 1 : 0) - (a.badge ? 1 : 0);
       });
   }, [initialProducts, selectedCategory, selectedBrand, searchQuery, sortBy]);
 

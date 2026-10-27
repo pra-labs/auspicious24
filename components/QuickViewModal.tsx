@@ -20,7 +20,7 @@ export default function QuickViewModal({ product, onClose }: QuickViewModalProps
   const [imageError, setImageError] = useState(false);
 
   const activePrice = selectedVariant ? selectedVariant.price : product.price;
-  const activeOriginalPrice = selectedVariant?.originalPrice || product.originalPrice;
+  const activeOriginalPrice = selectedVariant?.compare_at_price || product.compare_at_price;
   const discountPercent =
     activeOriginalPrice && activeOriginalPrice > activePrice
       ? Math.round(((activeOriginalPrice - activePrice) / activeOriginalPrice) * 100)
@@ -35,7 +35,7 @@ export default function QuickViewModal({ product, onClose }: QuickViewModalProps
   const orderUrl = getWhatsAppOrderUrl({
     productTitle: product.title,
     price: activePrice,
-    variantLabel: selectedVariant?.label,
+    variantLabel: selectedVariant?.title !== "Default Title" ? selectedVariant?.title : undefined,
     productHandle: product.handle,
   });
 
@@ -153,7 +153,7 @@ export default function QuickViewModal({ product, onClose }: QuickViewModalProps
                             : "bg-white text-stone-700 border-stone-200 hover:border-gold-300"
                         }`}
                       >
-                        {v.label} — ₹{v.price.toLocaleString("en-IN")}
+                        {v.title} — ₹{v.price.toLocaleString("en-IN")}
                       </button>
                     );
                   })}

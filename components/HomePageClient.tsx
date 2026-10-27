@@ -1,12 +1,14 @@
-"use client";
-
-import React, { useState } from "react";
-import Header from "@/components/Header";
-import Hero from "@/components/Hero";
-import ExhibitionBanner from "@/components/ExhibitionBanner";
-import CatalogExplorer from "@/components/CatalogExplorer";
-import CorporateGiftingSection from "@/components/CorporateGiftingSection";
-import BrandStorySection from "@/components/BrandStorySection";
+import React from "react";
+import AnnouncementBar from "./AnnouncementBar";
+import Header from "./Header";
+import Hero from "./Hero";
+import BrandPillars from "./BrandPillars";
+import CatalogExplorer from "./CatalogExplorer";
+import ExhibitionBanner from "./ExhibitionBanner";
+import CorporateGiftingSection from "./CorporateGiftingSection";
+import BrandStorySection from "./BrandStorySection";
+import FloatingWhatsApp from "./FloatingWhatsApp";
+import Footer from "./Footer";
 import { Product } from "@/lib/catalog";
 
 interface HomePageClientProps {
@@ -14,44 +16,20 @@ interface HomePageClientProps {
 }
 
 export default function HomePageClient({ products }: HomePageClientProps) {
-  const [selectedCategory, setSelectedCategory] = useState<string>("All");
-  const [searchTerm, setSearchTerm] = useState<string>("");
-
-  const handleSelectCategory = (cat: string) => {
-    setSelectedCategory(cat);
-    const catalogElement = document.getElementById("catalog");
-    if (catalogElement) {
-      catalogElement.scrollIntoView({ behavior: "smooth" });
-    }
-  };
-
-  const handleSearchChange = (term: string) => {
-    setSearchTerm(term);
-    if (term.trim().length > 0) {
-      const catalogElement = document.getElementById("catalog");
-      if (catalogElement) {
-        catalogElement.scrollIntoView({ behavior: "smooth" });
-      }
-    }
-  };
-
   return (
-    <>
-      <Header
-        selectedCategory={selectedCategory}
-        searchTerm={searchTerm}
-        onSelectCategory={handleSelectCategory}
-        onSearchChange={handleSearchChange}
-      />
-      <Hero />
-      <ExhibitionBanner />
-      <CatalogExplorer
-        key={`${selectedCategory}-${searchTerm}`}
-        initialProducts={products}
-        initialCategory={selectedCategory}
-      />
-      <CorporateGiftingSection />
-      <BrandStorySection />
-    </>
+    <div className="min-h-screen bg-[#FDFBF7] text-[#1C1917] selection:bg-[#D4AF37]/30 selection:text-[#0A1F17]">
+      <AnnouncementBar />
+      <Header />
+      <main>
+        <Hero />
+        <BrandPillars />
+        <CatalogExplorer products={products} />
+        <ExhibitionBanner />
+        <CorporateGiftingSection />
+        <BrandStorySection />
+      </main>
+      <Footer />
+      <FloatingWhatsApp />
+    </div>
   );
 }

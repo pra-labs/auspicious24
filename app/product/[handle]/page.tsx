@@ -27,10 +27,10 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 
   return {
     title: `${product.title} • Auspicious24 Festive Catalog`,
-    description: product.shortDescription,
+    description: product.description.slice(0, 160),
     openGraph: {
       title: `${product.title} | Auspicious24`,
-      description: product.shortDescription,
+      description: product.description.slice(0, 160),
       images: product.images[0] ? [product.images[0]] : [],
     },
   };

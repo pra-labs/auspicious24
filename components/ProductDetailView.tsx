@@ -38,7 +38,7 @@ export default function ProductDetailView({
   const [copiedShare, setCopiedShare] = useState(false);
 
   const activePrice = selectedVariant ? selectedVariant.price : product.price;
-  const activeOriginalPrice = selectedVariant?.originalPrice || product.originalPrice;
+  const activeOriginalPrice = selectedVariant?.compare_at_price || product.compare_at_price;
   const discountPercent =
     activeOriginalPrice && activeOriginalPrice > activePrice
       ? Math.round(((activeOriginalPrice - activePrice) / activeOriginalPrice) * 100)
@@ -53,7 +53,7 @@ export default function ProductDetailView({
   const orderUrl = getWhatsAppOrderUrl({
     productTitle: product.title,
     price: activePrice,
-    variantLabel: selectedVariant?.label,
+    variantLabel: selectedVariant?.title !== "Default Title" ? selectedVariant?.title : undefined,
     productHandle: product.handle,
   });
 
@@ -75,7 +75,7 @@ export default function ProductDetailView({
 
   return (
     <>
-      <Header selectedCategory={product.category} />
+      <Header />
       <div className="bg-cream-50 min-h-screen py-8 sm:py-12">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-12">
         {/* Breadcrumb & Navigation */}
@@ -165,7 +165,7 @@ export default function ProductDetailView({
                   <span>{product.category}</span>
                 </div>
                 <span className="text-[11px] text-stone-400 uppercase">
-                  SKU: {product.id.slice(0, 10)}
+                  SKU: {String(product.id).slice(0, 10)}
                 </span>
               </div>
 
@@ -215,7 +215,7 @@ export default function ProductDetailView({
                               : "bg-stone-50 text-stone-700 border-stone-200 hover:border-gold-300"
                           }`}
                         >
-                          <div className="text-xs font-bold">{v.label}</div>
+                          <div className="text-xs font-bold">{v.title}</div>
                           <div className={`text-xs mt-0.5 ${isSelected ? "text-gold-200" : "text-stone-500"}`}>
                             ₹{v.price.toLocaleString("en-IN")}
                           </div>
