@@ -71,11 +71,11 @@ export default function ProductCard({ product, onQuickView }: ProductCardProps) 
   };
 
   const metadataPill = (product as any).specsSummary || getProductMetadataPill(product);
-  const cleanedDesc = cleanCardDescription(product.description);
+  const cleanedDesc = cleanCardDescription(product.description, 80);
 
   return (
-    <div className="group flex flex-col relative bg-white border border-[#E8DEC9]/70 rounded-md overflow-hidden hover:shadow-xl hover:border-[#D4AF37]/60 transition-all duration-300">
-      {/* Product Image Frame (3/4 Aspect Ratio) */}
+    <div className="group flex flex-col relative bg-white border border-[#E8DEC9]/70 rounded-lg overflow-hidden hover:shadow-xl hover:border-[#D4AF37]/60 transition-all duration-300">
+      {/* Product Image Frame (3/4 or 4/5 Aspect Ratio for high-density mobile grid) */}
       <div className="relative aspect-[3/4] w-full overflow-hidden bg-[#FAF7F2]">
         <Link href={`/product/${product.handle}`} className="block w-full h-full">
           <Image
@@ -88,23 +88,23 @@ export default function ProductCard({ product, onQuickView }: ProductCardProps) 
         </Link>
 
         {/* Brand / Collection Pill Top-Left */}
-        <div className="absolute top-2.5 left-2.5 z-10 flex flex-col gap-1 items-start">
-          <span className="text-[10px] uppercase tracking-wider font-semibold px-2 py-0.5 rounded-full bg-[#0A1F17]/90 text-[#D4AF37] border border-[#D4AF37]/30 backdrop-blur-xs">
+        <div className="absolute top-1.5 sm:top-2.5 left-1.5 sm:left-2.5 z-10 flex flex-col gap-1 items-start max-w-[80%]">
+          <span className="text-[8px] sm:text-[10px] uppercase tracking-wider font-bold px-1.5 sm:px-2 py-0.5 rounded-full bg-[#0A1F17]/90 text-[#D4AF37] border border-[#D4AF37]/30 backdrop-blur-xs truncate">
             {product.brand}
           </span>
           {product.badge && (
-            <span className="text-[9px] uppercase tracking-wider font-medium px-2 py-0.5 rounded-full bg-[#FAF7F2]/95 text-[#0F2E22] border border-[#E8DEC9] shadow-xs">
+            <span className="hidden sm:inline-block text-[9px] uppercase tracking-wider font-medium px-2 py-0.5 rounded-full bg-[#FAF7F2]/95 text-[#0F2E22] border border-[#E8DEC9] shadow-xs">
               {product.badge}
             </span>
           )}
         </div>
 
         {/* Floating Quick Action Icons Top-Right */}
-        <div className="absolute top-2.5 right-2.5 z-10 flex flex-col gap-1.5 opacity-90 group-hover:opacity-100 transition-opacity">
+        <div className="absolute top-1.5 sm:top-2.5 right-1.5 sm:right-2.5 z-10 flex flex-col gap-1 opacity-90 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity">
           <button
             type="button"
             onClick={handleShare}
-            className="p-1.5 rounded-full bg-white/90 backdrop-blur-sm text-stone-700 hover:text-[#0F2E22] hover:bg-white transition-all shadow-xs"
+            className="p-1 sm:p-1.5 rounded-full bg-white/90 backdrop-blur-sm text-stone-700 hover:text-[#0F2E22] hover:bg-white transition-all shadow-xs min-h-[32px] min-w-[32px] flex items-center justify-center"
             title="Share on WhatsApp"
             aria-label="Share product"
           >
@@ -118,7 +118,7 @@ export default function ProductCard({ product, onQuickView }: ProductCardProps) 
                 e.stopPropagation();
                 onQuickView(product);
               }}
-              className="p-1.5 rounded-full bg-white/90 backdrop-blur-sm text-stone-700 hover:text-[#0F2E22] hover:bg-white transition-all shadow-xs"
+              className="hidden sm:flex p-1.5 rounded-full bg-white/90 backdrop-blur-sm text-stone-700 hover:text-[#0F2E22] hover:bg-white transition-all shadow-xs items-center justify-center min-h-[32px] min-w-[32px]"
               title="Quick View"
               aria-label="Quick View"
             >
@@ -127,7 +127,7 @@ export default function ProductCard({ product, onQuickView }: ProductCardProps) 
           )}
         </div>
 
-        {/* Hover Quick View Button bar */}
+        {/* Hover Quick View Button bar (Desktop only) */}
         {onQuickView && (
           <button
             type="button"
@@ -145,80 +145,61 @@ export default function ProductCard({ product, onQuickView }: ProductCardProps) 
       </div>
 
       {/* Product Content Details */}
-      <div className="p-3.5 sm:p-4 flex flex-col flex-1 justify-between space-y-3">
-        <div className="space-y-1.5">
-          <div className="text-[10px] uppercase tracking-wider text-stone-500 font-medium truncate">
+      <div className="p-2.5 sm:p-4 flex flex-col flex-1 justify-between space-y-2 sm:space-y-3">
+        <div className="space-y-1">
+          <div className="text-[9px] sm:text-[10px] uppercase tracking-wider text-stone-500 font-medium truncate">
             {product.category}
           </div>
           <Link
             href={`/product/${product.handle}`}
             className="block group/title"
           >
-            <h3 className="font-serif text-sm sm:text-base font-medium text-stone-900 line-clamp-2 group-hover/title:text-[#0F2E22] transition-colors leading-snug">
+            <h3 className="font-serif text-xs sm:text-base font-medium text-stone-900 line-clamp-2 group-hover/title:text-[#0F2E22] transition-colors leading-snug">
               {product.title}
             </h3>
           </Link>
-          <p className="text-[11px] text-stone-500 line-clamp-1 leading-relaxed">
+          {/* Subtle 1-line description, hidden on very small cards to save screen height */}
+          <p className="hidden sm:block text-[11px] text-stone-500 line-clamp-1 leading-relaxed">
             {cleanedDesc || product.title}
           </p>
         </div>
 
-        {/* Variants pills if multiple */}
-        {product.variants && product.variants.length > 1 && (
-          <div className="flex flex-wrap gap-1 pt-0.5">
-            {product.variants.map((v, idx) => (
-              <button
-                key={v.id}
-                type="button"
-                onClick={() => setSelectedVariantIdx(idx)}
-                className={`text-[10px] px-2 py-0.5 rounded-sm border transition-colors ${
-                  selectedVariantIdx === idx
-                    ? 'border-[#0F2E22] bg-[#0F2E22] text-[#FAF7F2] font-semibold'
-                    : 'border-stone-200 text-stone-600 hover:border-stone-400 bg-stone-50'
-                }`}
-              >
-                {v.title}
-              </button>
-            ))}
-          </div>
-        )}
-
         {/* Compact Metadata Pill right above Price */}
-        <div className="pt-2 border-t border-[#E8DEC9]/50 space-y-2">
+        <div className="pt-1.5 border-t border-[#E8DEC9]/50 space-y-1.5 sm:space-y-2">
           {metadataPill && (
-            <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-[#FAF7F2] border border-[#E8DEC9] text-[10px] uppercase tracking-wider text-[#0F2E22] font-semibold">
-              <span className="w-1.5 h-1.5 rounded-full bg-[#D4AF37]" />
-              <span>{metadataPill}</span>
+            <div className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-[#FAF7F2] border border-[#E8DEC9] text-[9px] sm:text-[10px] uppercase tracking-wider text-[#0F2E22] font-semibold truncate max-w-full">
+              <span className="w-1 h-1 sm:w-1.5 sm:h-1.5 rounded-full bg-[#D4AF37] shrink-0" />
+              <span className="truncate">{metadataPill}</span>
             </div>
           )}
 
-          {/* Pricing & Split Dual CTAs: Add to Tray + Order on WhatsApp */}
-          <div className="flex items-center justify-between gap-2">
+          {/* Pricing & Split Dual CTAs: Responsive Mobile Icon & Desktop Buttons */}
+          <div className="flex items-center justify-between gap-1.5">
             <div>
-              <div className="flex items-baseline gap-1.5">
-                <span className="font-serif text-base sm:text-lg font-bold text-[#0F2E22]">
+              <div className="flex items-baseline gap-1">
+                <span className="font-serif text-sm sm:text-lg font-bold text-[#0F2E22]">
                   {formatINR(activePrice)}
                 </span>
                 {activeOriginalPrice && activeOriginalPrice > activePrice && (
-                  <span className="text-xs text-stone-400 line-through">
+                  <span className="text-[10px] sm:text-xs text-stone-400 line-through">
                     {formatINR(activeOriginalPrice)}
                   </span>
                 )}
               </div>
               {discountPercent && (
-                <span className="text-[10px] text-emerald-700 font-semibold uppercase">
+                <span className="text-[9px] sm:text-[10px] text-emerald-700 font-semibold uppercase">
                   {discountPercent}% Off
                 </span>
               )}
             </div>
 
-            {/* Action Buttons */}
-            <div className="flex items-center gap-1.5">
+            {/* Action Buttons: Minimalist Icon-based on Mobile, Full on Desktop */}
+            <div className="flex items-center gap-1">
               {/* Add to Festive Tray Button */}
               <button
                 type="button"
                 onClick={handleAddToTray}
-                className={`p-2 rounded-sm border transition-all text-xs font-semibold flex items-center gap-1 ${
+                className={`p-2 rounded-sm border transition-all text-xs font-semibold flex items-center justify-center min-h-[36px] min-w-[36px] sm:min-h-[38px] ${
                   justAdded
                     ? 'bg-[#0F2E22] text-[#D4AF37] border-[#0F2E22]'
                     : 'bg-white hover:bg-[#FAF7F2] text-stone-700 hover:text-[#0F2E22] border-[#E8DEC9] hover:border-[#D4AF37]'
@@ -227,24 +208,24 @@ export default function ProductCard({ product, onQuickView }: ProductCardProps) 
                 aria-label={`Add ${product.title} to Festive Tray`}
               >
                 {justAdded ? (
-                  <Check className="w-3.5 h-3.5 text-[#D4AF37]" />
+                  <Check className="w-4 h-4 text-[#D4AF37]" />
                 ) : (
-                  <Plus className="w-3.5 h-3.5" />
+                  <Plus className="w-4 h-4" />
                 )}
-                <ShoppingBag className="w-3.5 h-3.5 hidden xl:inline" />
-                <span className="hidden xl:inline text-[11px]">Tray</span>
+                <span className="hidden xl:inline text-[11px] ml-1">Tray</span>
               </button>
 
-              {/* Order on WhatsApp Primary CTA */}
+              {/* Order on WhatsApp CTA: Icon only on mobile grid, full text on desktop */}
               <a
                 href={orderUrl}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="inline-flex items-center gap-1.5 px-2.5 sm:px-3 py-2 bg-[#25D366] hover:bg-[#20BA5A] text-white text-[11px] sm:text-xs font-bold rounded-sm transition-all shadow-xs hover:shadow-md shrink-0"
+                className="inline-flex items-center justify-center gap-1.5 p-2 sm:px-3 sm:py-2 bg-[#25D366] hover:bg-[#20BA5A] text-white text-[11px] sm:text-xs font-bold rounded-sm transition-all shadow-xs hover:shadow-md shrink-0 min-h-[36px] min-w-[36px] sm:min-h-[38px]"
                 title="Order on WhatsApp"
+                aria-label={`Order ${product.title} on WhatsApp`}
               >
-                <MessageCircle className="w-3.5 h-3.5 fill-current shrink-0" />
-                <span className="whitespace-nowrap">Order on WhatsApp</span>
+                <MessageCircle className="w-4 h-4 fill-current shrink-0" />
+                <span className="hidden sm:inline whitespace-nowrap">Order on WhatsApp</span>
               </a>
             </div>
           </div>

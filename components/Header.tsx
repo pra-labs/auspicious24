@@ -2,7 +2,7 @@
 
 import React, { useState } from 'react';
 import Link from 'next/link';
-import { MessageCircle, Menu, X, Sparkles, MapPin, ShoppingBag } from 'lucide-react';
+import { Menu, X, Sparkles, MapPin, ShoppingBag } from 'lucide-react';
 import { useFestiveTray } from '@/context/FestiveTrayContext';
 
 interface NavItem {
@@ -66,7 +66,7 @@ export default function Header() {
             <button
               type="button"
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-              className="p-2 text-stone-800 hover:text-[#0F2E22] transition-colors"
+              className="p-2 -ml-2 text-stone-800 hover:text-[#0F2E22] transition-colors"
               aria-label="Toggle navigation menu"
             >
               {mobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
@@ -74,16 +74,16 @@ export default function Header() {
           </div>
 
           {/* Brand Logo & Monogram */}
-          <div className="flex items-center gap-3">
-            <Link href="/" className="flex items-center gap-2.5 group">
-              <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-[#0A1F17] flex items-center justify-center border border-[#D4AF37]/50 shadow-sm group-hover:scale-105 transition-transform">
+          <div className="flex items-center gap-2 sm:gap-3">
+            <Link href="/" className="flex items-center gap-2 sm:gap-2.5 group">
+              <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-[#0A1F17] flex items-center justify-center border border-[#D4AF37]/50 shadow-sm group-hover:scale-105 transition-transform">
                 <Sparkles className="w-4 h-4 sm:w-5 sm:h-5 text-[#D4AF37]" />
               </div>
               <div className="flex flex-col">
-                <span className="font-serif text-lg sm:text-2xl font-bold tracking-tight text-[#0A1F17] group-hover:text-[#0F2E22] transition-colors">
+                <span className="font-serif text-base sm:text-2xl font-bold tracking-tight text-[#0A1F17] group-hover:text-[#0F2E22] transition-colors leading-tight">
                   AUSPICIOUS<span className="text-[#D4AF37]">24</span>
                 </span>
-                <span className="text-[9px] uppercase tracking-[0.25em] text-[#6E655F] -mt-1 font-medium">
+                <span className="text-[8px] sm:text-[9px] uppercase tracking-[0.22em] text-[#6E655F] font-medium">
                   Luxury Marketplace
                 </span>
               </div>
@@ -116,7 +116,7 @@ export default function Header() {
             <button
               type="button"
               onClick={openTray}
-              className="relative p-2 rounded-full text-stone-700 hover:text-[#0F2E22] hover:bg-[#FAF7F2] border border-transparent hover:border-[#E8DEC9] transition-all flex items-center gap-1.5"
+              className="relative p-2 rounded-full text-stone-700 hover:text-[#0F2E22] hover:bg-[#FAF7F2] border border-transparent hover:border-[#E8DEC9] transition-all flex items-center gap-1.5 min-h-[44px] min-w-[44px] justify-center"
               aria-label={`View Festive Tray with ${totalCount} items`}
               title="View Festive Tray"
             >
@@ -131,16 +131,15 @@ export default function Header() {
               <span className="hidden sm:inline text-xs font-semibold text-stone-700">Tray</span>
             </button>
 
-            {/* Direct WhatsApp Concierge Button */}
+            {/* Desktop-only WhatsApp hotline button - On mobile, direct communication is gracefully owned by the floating action button */}
             <a
               href="https://wa.me/919899875665?text=Hello%20Auspicious24,%20I%20would%20like%20to%20inquire%20about%20your%20festive%20collection."
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex items-center gap-2 px-3 sm:px-4 py-2 bg-[#0F2E22] hover:bg-[#1B4736] text-[#FAF7F2] text-xs uppercase tracking-wider font-semibold rounded-sm border border-[#D4AF37]/50 shadow-sm transition-all"
+              className="hidden md:inline-flex items-center gap-2 px-3.5 py-2 bg-[#0F2E22] hover:bg-[#1B4736] text-[#FAF7F2] text-xs uppercase tracking-wider font-semibold rounded-sm border border-[#D4AF37]/50 shadow-sm transition-all"
             >
-              <MessageCircle className="w-3.5 h-3.5 text-[#25D366] fill-current" />
-              <span className="hidden md:inline">+91 98998 75665</span>
-              <span className="md:hidden">WhatsApp</span>
+              <span className="w-2 h-2 rounded-full bg-[#25D366] inline-block animate-pulse" />
+              <span>+91 98998 75665</span>
             </a>
           </div>
         </div>
@@ -170,7 +169,7 @@ export default function Header() {
                 setMobileMenuOpen(false);
                 openTray();
               }}
-              className="w-full flex items-center justify-between px-3 py-2 rounded-md bg-[#FAF7F2] border border-[#E8DEC9] text-xs font-bold text-[#0F2E22]"
+              className="w-full flex items-center justify-between px-3 py-2.5 rounded-md bg-[#FAF7F2] border border-[#E8DEC9] text-xs font-bold text-[#0F2E22]"
             >
               <span className="flex items-center gap-2">
                 <ShoppingBag className="w-4 h-4 text-[#D4AF37]" />
@@ -181,9 +180,19 @@ export default function Header() {
               </span>
             </button>
 
-            <div className="flex items-center gap-2 text-xs text-stone-600 px-3">
-              <MapPin className="w-4 h-4 text-[#D4AF37]" />
-              <span>B21, South City 1, Gurgaon (11 AM – 9 PM)</span>
+            {/* Mobile WhatsApp Quick Call in Menu */}
+            <a
+              href="https://wa.me/919899875665?text=Hello%20Auspicious24,%20I%20would%20like%20to%20inquire%20about%20your%20festive%20collection."
+              target="_blank"
+              rel="noopener noreferrer"
+              className="w-full flex items-center justify-center gap-2 px-3 py-2.5 rounded-md bg-[#0F2E22] text-[#D4AF37] text-xs font-bold uppercase tracking-wider"
+            >
+              <span>Chat with Concierge (+91 98998 75665)</span>
+            </a>
+
+            <div className="flex items-center gap-2 text-xs text-stone-600 px-1 pt-1">
+              <MapPin className="w-4 h-4 text-[#D4AF37] shrink-0" />
+              <span>B21, South City 1, Gurgaon • 11 AM – 9 PM</span>
             </div>
           </div>
         </div>

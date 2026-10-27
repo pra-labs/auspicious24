@@ -282,54 +282,60 @@ export default function CatalogExplorer({
 
         {/* Sticky Filter & Category Bar on Scroll */}
         <div className="sticky top-16 sm:top-20 z-30 bg-[#FDFBF7]/95 backdrop-blur-md py-3.5 -mx-4 px-4 sm:-mx-6 sm:px-6 lg:-mx-8 lg:px-8 border-y border-[#E8DEC9]/80 shadow-2xs space-y-3">
-          {/* Primary Category Tabs */}
-          <div className="flex items-center gap-2 overflow-x-auto pb-1 scrollbar-none">
-            {CATEGORIES.map((cat) => {
-              const isActive = selectedCategory === cat;
-              return (
-                <button
-                  key={cat}
-                  onClick={() => handleCategoryChange(cat)}
-                  className={`px-4 sm:px-5 py-2 rounded-full text-xs sm:text-sm font-semibold tracking-wide whitespace-nowrap transition-all ${
-                    isActive
-                      ? "bg-[#0A1F17] text-[#D4AF37] shadow-md border border-[#D4AF37]/50 scale-[1.02]"
-                      : "bg-white text-stone-700 hover:text-[#0A1F17] hover:bg-[#FAF7F2] border border-[#E8DEC9]"
-                  }`}
-                >
-                  {cat}
-                </button>
-              );
-            })}
+          {/* Primary Category Tabs - Single row horizontal scroll with snap on mobile */}
+          <div className="relative">
+            <div className="flex items-center gap-2 overflow-x-auto pb-1 scrollbar-none snap-x snap-mandatory">
+              {CATEGORIES.map((cat) => {
+                const isActive = selectedCategory === cat;
+                return (
+                  <button
+                    key={cat}
+                    onClick={() => handleCategoryChange(cat)}
+                    className={`snap-start px-3.5 sm:px-5 py-2 rounded-full text-xs sm:text-sm font-semibold tracking-wide whitespace-nowrap transition-all min-h-[38px] flex items-center justify-center shrink-0 ${
+                      isActive
+                        ? "bg-[#0A1F17] text-[#D4AF37] shadow-md border border-[#D4AF37]/50 scale-[1.02]"
+                        : "bg-white text-stone-700 hover:text-[#0A1F17] hover:bg-[#FAF7F2] border border-[#E8DEC9]"
+                    }`}
+                  >
+                    {cat}
+                  </button>
+                );
+              })}
+            </div>
+            <div className="pointer-events-none absolute right-0 top-0 bottom-0 w-6 bg-gradient-to-l from-[#FDFBF7] to-transparent sm:hidden" />
           </div>
 
           {/* Quick-Filter Pills & Search Controls */}
-          <div className="flex flex-col md:flex-row items-center justify-between gap-3">
-            {/* Quick Pills (Desktop & Mobile horizontal scroll) */}
-            <div className="flex items-center gap-1.5 overflow-x-auto w-full md:w-auto scrollbar-none pb-1 md:pb-0">
-              <span className="text-[10px] uppercase tracking-wider text-stone-400 font-bold shrink-0 hidden sm:inline">
-                Quick:
-              </span>
-              {[
-                { id: "all", label: "All Items" },
-                { id: "bestseller", label: "⭐ Best Sellers" },
-                { id: "under1500", label: "🎁 Under ₹1,500" },
-                { id: "suits", label: "👑 Sifti Suits" },
-                { id: "decor", label: "🏺 Ornate Decor" },
-                { id: "hampers", label: "✨ Hampers" },
-                { id: "dryfruits", label: "🥜 Dry Fruits" },
-              ].map((pill) => (
-                <button
-                  key={pill.id}
-                  onClick={() => handleQuickPillChange(pill.id)}
-                  className={`text-[11px] px-3 py-1 rounded-full whitespace-nowrap font-medium transition-colors ${
-                    quickPill === pill.id
-                      ? "bg-[#0F2E22] text-[#FAF7F2] font-semibold shadow-xs"
-                      : "bg-white/90 text-stone-600 hover:text-stone-900 border border-[#E8DEC9]"
-                  }`}
-                >
-                  {pill.label}
-                </button>
-              ))}
+          <div className="flex flex-col md:flex-row items-center justify-between gap-2.5 sm:gap-3">
+            {/* Quick Pills (Desktop & Mobile horizontal scroll with snap) */}
+            <div className="relative w-full md:w-auto">
+              <div className="flex items-center gap-1.5 overflow-x-auto w-full md:w-auto scrollbar-none pb-1 md:pb-0 snap-x snap-mandatory">
+                <span className="text-[10px] uppercase tracking-wider text-stone-400 font-bold shrink-0 hidden sm:inline">
+                  Quick:
+                </span>
+                {[
+                  { id: "all", label: "All Items" },
+                  { id: "bestseller", label: "⭐ Best Sellers" },
+                  { id: "under1500", label: "🎁 Under ₹1,500" },
+                  { id: "suits", label: "👑 Sifti Suits" },
+                  { id: "decor", label: "🏺 Ornate Decor" },
+                  { id: "hampers", label: "✨ Hampers" },
+                  { id: "dryfruits", label: "🥜 Dry Fruits" },
+                ].map((pill) => (
+                  <button
+                    key={pill.id}
+                    onClick={() => handleQuickPillChange(pill.id)}
+                    className={`snap-start text-[11px] px-3 py-1.5 rounded-full whitespace-nowrap font-medium transition-colors shrink-0 min-h-[34px] flex items-center justify-center ${
+                      quickPill === pill.id
+                        ? "bg-[#0F2E22] text-[#FAF7F2] font-semibold shadow-xs"
+                        : "bg-white/90 text-stone-600 hover:text-stone-900 border border-[#E8DEC9]"
+                    }`}
+                  >
+                    {pill.label}
+                  </button>
+                ))}
+              </div>
+              <div className="pointer-events-none absolute right-0 top-0 bottom-0 w-6 bg-gradient-to-l from-[#FDFBF7] to-transparent sm:hidden" />
             </div>
 
             {/* Right: Search, Brand Filter & Sorting Controls */}
@@ -404,7 +410,7 @@ export default function CatalogExplorer({
         {/* Product Cards Grid */}
         {visibleProducts.length > 0 ? (
           <div className="space-y-8">
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5 sm:gap-6">
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-6">
               {visibleProducts.map((product) => (
                 <ProductCard
                   key={product.id}
