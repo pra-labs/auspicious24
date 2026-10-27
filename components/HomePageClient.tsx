@@ -8,11 +8,7 @@ import CollapsibleSections from "./CollapsibleSections";
 import ExhibitionBanner from "./ExhibitionBanner";
 import CorporateGiftingSection from "./CorporateGiftingSection";
 import BrandStorySection from "./BrandStorySection";
-import FloatingWhatsApp from "./FloatingWhatsApp";
-import FloatingFestiveTrayBadge from "./FloatingFestiveTrayBadge";
-import FestiveTrayDrawer from "./FestiveTrayDrawer";
 import MobileStickyBottomBar from "./MobileStickyBottomBar";
-import Footer from "./Footer";
 import { Product } from "@/lib/catalog";
 
 interface HomePageClientProps {
@@ -21,7 +17,7 @@ interface HomePageClientProps {
 
 export default function HomePageClient({ products }: HomePageClientProps) {
   return (
-    <div className="min-h-screen bg-[#FDFBF7] text-[#1C1917] selection:bg-[#D4AF37]/30 selection:text-[#0A1F17] pb-16 sm:pb-0">
+    <div className="min-h-screen bg-[#FDFBF7] text-[#1C1917] selection:bg-[#D4AF37]/30 selection:text-[#0A1F17] pb-20 sm:pb-0">
       <AnnouncementBar />
       <Header />
       <main>
@@ -37,11 +33,6 @@ export default function HomePageClient({ products }: HomePageClientProps) {
         </div>
         <BrandStorySection />
       </main>
-      <Footer />
-      {/* Floating Action Elements with safe clearances */}
-      <FloatingWhatsApp />
-      <FloatingFestiveTrayBadge />
-      <FestiveTrayDrawer />
       {/* Mobile Sticky Quick Navigation & Inquiry Bar */}
       <MobileStickyBottomBar />
     </div>

@@ -6,7 +6,7 @@ import Link from "next/link";
 import { Product, CATEGORIES, formatINR } from "@/lib/catalog";
 import ProductCard from "./ProductCard";
 import QuickViewModal from "./QuickViewModal";
-import { Search, ArrowUpDown, X, Sparkles, Filter, ChevronDown, Check, Eye } from "lucide-react";
+import { Search, ArrowUpDown, X, Sparkles, Filter, ChevronDown, Check, Eye, SlidersHorizontal } from "lucide-react";
 
 interface CatalogExplorerProps {
   initialProducts?: Product[];
@@ -29,6 +29,7 @@ export default function CatalogExplorer({
   const [quickPill, setQuickPill] = useState<string>("all");
   const [visibleCount, setVisibleCount] = useState<number>(PAGE_SIZE);
   const [quickViewProduct, setQuickViewProduct] = useState<Product | null>(null);
+  const [isFilterSheetOpen, setIsFilterSheetOpen] = useState<boolean>(false);
 
   // Sync with window custom event (triggered by header nav links, hero collage, etc.)
   useEffect(() => {
@@ -281,20 +282,23 @@ export default function CatalogExplorer({
         )}
 
         {/* Sticky Filter & Category Bar on Scroll */}
-        <div className="sticky top-16 sm:top-20 z-30 bg-[#FDFBF7]/95 backdrop-blur-md py-3.5 -mx-4 px-4 sm:-mx-6 sm:px-6 lg:-mx-8 lg:px-8 border-y border-[#E8DEC9]/80 shadow-2xs space-y-3">
-          {/* Primary Category Tabs - Single row horizontal scroll with snap on mobile */}
-          <div className="relative">
-            <div className="flex items-center gap-2 overflow-x-auto pb-1 scrollbar-none snap-x snap-mandatory">
+        <div className="sticky top-16 sm:top-20 z-30 bg-[#FDFBF7]/95 backdrop-blur-md py-3 -mx-4 px-4 sm:-mx-6 sm:px-6 lg:-mx-8 lg:px-8 border-y border-[#E8DEC9]/80 shadow-2xs space-y-2.5">
+          {/* Primary Category Strip - Text Links with Gold Underline (Single row horizontal scroll with snap) */}
+          <div className="relative border-b border-[#E8DEC9]/60 pb-1">
+            <div
+              className="flex flex-nowrap items-center gap-5 sm:gap-7 overflow-x-auto whitespace-nowrap scrollbar-none snap-x snap-mandatory [-webkit-overflow-scrolling:touch]"
+              style={{ WebkitOverflowScrolling: "touch" }}
+            >
               {CATEGORIES.map((cat) => {
                 const isActive = selectedCategory === cat;
                 return (
                   <button
                     key={cat}
                     onClick={() => handleCategoryChange(cat)}
-                    className={`snap-start px-3.5 sm:px-5 py-2 rounded-full text-xs sm:text-sm font-semibold tracking-wide whitespace-nowrap transition-all min-h-[38px] flex items-center justify-center shrink-0 ${
+                    className={`snap-start relative pb-2 text-xs sm:text-sm font-serif tracking-wide whitespace-nowrap transition-all shrink-0 min-h-[36px] flex items-center ${
                       isActive
-                        ? "bg-[#0A1F17] text-[#D4AF37] shadow-md border border-[#D4AF37]/50 scale-[1.02]"
-                        : "bg-white text-stone-700 hover:text-[#0A1F17] hover:bg-[#FAF7F2] border border-[#E8DEC9]"
+                        ? "text-[#0A1F17] font-bold border-b-2 border-[#D4AF37]"
+                        : "text-stone-500 hover:text-stone-900 border-b-2 border-transparent hover:border-stone-300 font-medium"
                     }`}
                   >
                     {cat}
@@ -302,74 +306,79 @@ export default function CatalogExplorer({
                 );
               })}
             </div>
-            <div className="pointer-events-none absolute right-0 top-0 bottom-0 w-6 bg-gradient-to-l from-[#FDFBF7] to-transparent sm:hidden" />
+            <div className="pointer-events-none absolute right-0 top-0 bottom-0 w-8 bg-gradient-to-l from-[#FDFBF7] to-transparent sm:hidden" />
           </div>
 
-          {/* Quick-Filter Pills & Search Controls */}
-          <div className="flex flex-col md:flex-row items-center justify-between gap-2.5 sm:gap-3">
-            {/* Quick Pills (Desktop & Mobile horizontal scroll with snap) */}
-            <div className="relative w-full md:w-auto">
-              <div className="flex items-center gap-1.5 overflow-x-auto w-full md:w-auto scrollbar-none pb-1 md:pb-0 snap-x snap-mandatory">
-                <span className="text-[10px] uppercase tracking-wider text-stone-400 font-bold shrink-0 hidden sm:inline">
-                  Quick:
-                </span>
-                {[
-                  { id: "all", label: "All Items" },
-                  { id: "bestseller", label: "⭐ Best Sellers" },
-                  { id: "under1500", label: "🎁 Under ₹1,500" },
-                  { id: "suits", label: "👑 Sifti Suits" },
-                  { id: "decor", label: "🏺 Ornate Decor" },
-                  { id: "hampers", label: "✨ Hampers" },
-                  { id: "dryfruits", label: "🥜 Dry Fruits" },
-                ].map((pill) => (
-                  <button
-                    key={pill.id}
-                    onClick={() => handleQuickPillChange(pill.id)}
-                    className={`snap-start text-[11px] px-3 py-1.5 rounded-full whitespace-nowrap font-medium transition-colors shrink-0 min-h-[34px] flex items-center justify-center ${
-                      quickPill === pill.id
-                        ? "bg-[#0F2E22] text-[#FAF7F2] font-semibold shadow-xs"
-                        : "bg-white/90 text-stone-600 hover:text-stone-900 border border-[#E8DEC9]"
-                    }`}
-                  >
-                    {pill.label}
-                  </button>
-                ))}
-              </div>
-              <div className="pointer-events-none absolute right-0 top-0 bottom-0 w-6 bg-gradient-to-l from-[#FDFBF7] to-transparent sm:hidden" />
+          {/* Subcategory Quick Pills (Horizontally Scrollable Single Row, Never Wraps) */}
+          <div className="relative overflow-hidden w-full">
+            <div
+              className="flex flex-nowrap items-center gap-1.5 sm:gap-2 overflow-x-auto whitespace-nowrap scrollbar-none py-0.5 snap-x snap-mandatory [-webkit-overflow-scrolling:touch]"
+              style={{ WebkitOverflowScrolling: "touch" }}
+            >
+              <span className="text-[10px] uppercase tracking-wider text-stone-400 font-bold shrink-0 hidden sm:inline mr-1">
+                Quick:
+              </span>
+              {[
+                { id: "all", label: "All Items" },
+                { id: "bestseller", label: "⭐ Best Sellers" },
+                { id: "under1500", label: "🎁 Under ₹1,500" },
+                { id: "suits", label: "👑 Sifti Suits" },
+                { id: "decor", label: "🏺 Ornate Decor" },
+                { id: "hampers", label: "✨ Hampers" },
+                { id: "dryfruits", label: "🥜 Dry Fruits" },
+              ].map((pill) => (
+                <button
+                  key={pill.id}
+                  onClick={() => handleQuickPillChange(pill.id)}
+                  className={`snap-start text-[11px] px-3 sm:px-3.5 py-1.5 rounded-full whitespace-nowrap font-medium transition-all shrink-0 min-h-[34px] flex items-center justify-center ${
+                    quickPill === pill.id
+                      ? "bg-[#0A1F17] text-[#D4AF37] font-semibold shadow-xs border border-[#D4AF37]/50"
+                      : "bg-white text-stone-600 hover:text-stone-900 border border-[#E8DEC9] hover:bg-[#FAF7F2]"
+                  }`}
+                >
+                  {pill.label}
+                </button>
+              ))}
+            </div>
+            <div className="pointer-events-none absolute right-0 top-0 bottom-0 w-8 bg-gradient-to-l from-[#FDFBF7] to-transparent sm:hidden" />
+          </div>
+
+          {/* Single Horizontal Control Bar Combining Search, Brand & Sort */}
+          {/* Desktop Single Control Bar */}
+          <div className="hidden md:flex items-center justify-between gap-3 pt-1">
+            {/* Search Input */}
+            <div className="relative w-72">
+              <Search className="w-3.5 h-3.5 absolute left-3 top-1/2 -translate-y-1/2 text-stone-400" />
+              <input
+                id="catalog-search-input"
+                type="text"
+                placeholder="Search fabric, nuts, boxes..."
+                value={searchQuery}
+                onChange={(e) => {
+                  setSearchQuery(e.target.value);
+                  setVisibleCount(PAGE_SIZE);
+                }}
+                className="w-full pl-8 pr-7 py-2 text-xs bg-white border border-[#E8DEC9] focus:border-[#D4AF37] rounded-lg focus:outline-none transition-all placeholder:text-stone-400 shadow-2xs"
+              />
+              {searchQuery && (
+                <button
+                  onClick={() => setSearchQuery("")}
+                  className="absolute right-2 top-1/2 -translate-y-1/2 text-stone-400 hover:text-stone-700"
+                  aria-label="Clear search"
+                >
+                  <X className="w-3.5 h-3.5" />
+                </button>
+              )}
             </div>
 
-            {/* Right: Search, Brand Filter & Sorting Controls */}
-            <div className="flex flex-wrap items-center justify-between md:justify-end gap-2 w-full md:w-auto">
-              {/* Search Input */}
-              <div className="relative flex-1 sm:w-56 md:w-60">
-                <Search className="w-3.5 h-3.5 absolute left-3 top-1/2 -translate-y-1/2 text-stone-400" />
-                <input
-                  type="text"
-                  placeholder="Search fabric, nuts, boxes..."
-                  value={searchQuery}
-                  onChange={(e) => {
-                    setSearchQuery(e.target.value);
-                    setVisibleCount(PAGE_SIZE);
-                  }}
-                  className="w-full pl-8 pr-7 py-1.5 text-xs bg-white border border-[#E8DEC9] focus:border-[#D4AF37] rounded-lg focus:outline-none transition-all placeholder:text-stone-400"
-                />
-                {searchQuery && (
-                  <button
-                    onClick={() => setSearchQuery("")}
-                    className="absolute right-2 top-1/2 -translate-y-1/2 text-stone-400 hover:text-stone-700"
-                    aria-label="Clear search"
-                  >
-                    <X className="w-3.5 h-3.5" />
-                  </button>
-                )}
-              </div>
-
-              {/* Brand Selector Dropdown */}
-              <div className="flex items-center gap-1 text-xs text-stone-600">
+            {/* Brand & Sort Dropdowns + Reset */}
+            <div className="flex items-center gap-2.5">
+              <div className="flex items-center gap-1.5 text-xs text-stone-600">
+                <span className="text-[11px] uppercase tracking-wider text-stone-400 font-bold">Brand:</span>
                 <select
                   value={selectedBrand}
                   onChange={(e) => handleBrandChange(e.target.value)}
-                  className="bg-white border border-[#E8DEC9] rounded-lg px-2.5 py-1.5 text-xs font-medium text-stone-800 focus:outline-none focus:border-[#D4AF37]"
+                  className="bg-white border border-[#E8DEC9] rounded-lg px-2.5 py-2 text-xs font-medium text-stone-800 focus:outline-none focus:border-[#D4AF37] shadow-2xs"
                 >
                   {brandList.map((b) => (
                     <option key={b} value={b}>
@@ -379,12 +388,12 @@ export default function CatalogExplorer({
                 </select>
               </div>
 
-              {/* Sort Dropdown */}
-              <div className="flex items-center gap-1 text-xs text-stone-600">
+              <div className="flex items-center gap-1.5 text-xs text-stone-600">
+                <span className="text-[11px] uppercase tracking-wider text-stone-400 font-bold">Sort:</span>
                 <select
                   value={sortBy}
                   onChange={(e) => setSortBy(e.target.value as any)}
-                  className="bg-white border border-[#E8DEC9] rounded-lg px-2.5 py-1.5 text-xs font-medium text-stone-800 focus:outline-none focus:border-[#D4AF37]"
+                  className="bg-white border border-[#E8DEC9] rounded-lg px-2.5 py-2 text-xs font-medium text-stone-800 focus:outline-none focus:border-[#D4AF37] shadow-2xs"
                 >
                   <option value="featured">Featured First</option>
                   <option value="bestseller">Best Sellers</option>
@@ -393,17 +402,70 @@ export default function CatalogExplorer({
                 </select>
               </div>
 
-              {/* Reset active filters */}
               {activeFiltersCount > 0 && (
                 <button
                   onClick={resetFilters}
-                  className="text-xs text-rose-700 hover:underline flex items-center gap-1 font-semibold px-2 py-1"
+                  className="text-xs text-rose-700 hover:text-rose-800 hover:underline flex items-center gap-1 font-semibold px-2 py-1.5"
                 >
-                  <X className="w-3 h-3" />
-                  <span>Reset</span>
+                  <X className="w-3.5 h-3.5" />
+                  <span>Reset ({activeFiltersCount})</span>
                 </button>
               )}
             </div>
+          </div>
+
+          {/* Mobile Sleek Single Control Bar: Search + Filter & Sort Bottom Sheet Trigger */}
+          <div className="flex md:hidden items-center gap-2 pt-0.5">
+            <div className="relative flex-1">
+              <Search className="w-3.5 h-3.5 absolute left-3 top-1/2 -translate-y-1/2 text-stone-400" />
+              <input
+                id="catalog-search-input"
+                type="text"
+                placeholder="Search treasures..."
+                value={searchQuery}
+                onChange={(e) => {
+                  setSearchQuery(e.target.value);
+                  setVisibleCount(PAGE_SIZE);
+                }}
+                className="w-full pl-8 pr-7 py-2 text-xs bg-white border border-[#E8DEC9] focus:border-[#D4AF37] rounded-lg focus:outline-none transition-all placeholder:text-stone-400 min-h-[40px]"
+              />
+              {searchQuery && (
+                <button
+                  onClick={() => setSearchQuery("")}
+                  className="absolute right-2 top-1/2 -translate-y-1/2 text-stone-400 hover:text-stone-700 p-1"
+                  aria-label="Clear search"
+                >
+                  <X className="w-3.5 h-3.5" />
+                </button>
+              )}
+            </div>
+
+            <button
+              type="button"
+              onClick={() => setIsFilterSheetOpen(true)}
+              className="px-3 py-2 rounded-lg bg-white border border-[#E8DEC9] text-[#0A1F17] font-semibold text-xs flex items-center gap-1.5 shrink-0 shadow-2xs min-h-[40px] active:bg-stone-50"
+              aria-label="Open Filter and Sort menu"
+            >
+              <SlidersHorizontal className="w-3.5 h-3.5 text-[#D4AF37]" />
+              <span>Filter &amp; Sort</span>
+              {activeFiltersCount > 0 && (
+                <span className="w-4 h-4 rounded-full bg-[#0A1F17] text-[#D4AF37] text-[10px] font-bold flex items-center justify-center">
+                  {activeFiltersCount}
+                </span>
+              )}
+            </button>
+
+            {activeFiltersCount > 0 && (
+              <button
+                type="button"
+                onClick={resetFilters}
+                className="p-2 text-rose-700 hover:text-rose-800 rounded-md text-xs font-semibold shrink-0 min-h-[40px] flex items-center justify-center"
+                title="Reset filters"
+                aria-label="Reset filters"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            )}
           </div>
         </div>
 
@@ -470,6 +532,132 @@ export default function CatalogExplorer({
           product={quickViewProduct}
           onClose={() => setQuickViewProduct(null)}
         />
+      )}
+
+      {/* Mobile Filter & Sort Bottom Sheet */}
+      {isFilterSheetOpen && (
+        <div className="fixed inset-0 z-50 flex flex-col justify-end sm:hidden">
+          {/* Backdrop */}
+          <div
+            className="fixed inset-0 bg-black/60 backdrop-blur-xs transition-opacity animate-in fade-in duration-200"
+            onClick={() => setIsFilterSheetOpen(false)}
+            aria-hidden="true"
+          />
+
+          {/* Sheet Container */}
+          <div className="relative z-10 w-full max-h-[85vh] bg-[#FDFBF7] rounded-t-3xl border-t border-[#D4AF37]/50 shadow-2xl p-5 overflow-y-auto space-y-5 animate-in slide-in-from-bottom duration-300">
+            {/* Sheet Header */}
+            <div className="flex items-center justify-between border-b border-[#E8DEC9] pb-3">
+              <div className="flex items-center gap-2">
+                <SlidersHorizontal className="w-4 h-4 text-[#D4AF37]" />
+                <h3 className="font-serif text-base font-bold text-[#0A1F17]">
+                  Filter &amp; Sort Treasures
+                </h3>
+              </div>
+              <button
+                type="button"
+                onClick={() => setIsFilterSheetOpen(false)}
+                className="p-1.5 rounded-full text-stone-500 hover:text-stone-900 bg-stone-100 hover:bg-stone-200 transition-colors"
+                aria-label="Close filters"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+
+            {/* Sort Selection */}
+            <div className="space-y-2">
+              <span className="text-[11px] uppercase tracking-wider font-bold text-stone-600">
+                Sort By
+              </span>
+              <div className="grid grid-cols-2 gap-2 text-xs">
+                {[
+                  { id: "featured", label: "Featured First" },
+                  { id: "bestseller", label: "Best Sellers" },
+                  { id: "price-asc", label: "Price: Low to High" },
+                  { id: "price-desc", label: "Price: High to Low" },
+                ].map((s) => (
+                  <button
+                    key={s.id}
+                    type="button"
+                    onClick={() => setSortBy(s.id as any)}
+                    className={`py-2 px-3 rounded-lg border text-left font-medium min-h-[40px] flex items-center justify-between ${
+                      sortBy === s.id
+                        ? "bg-[#0A1F17] text-[#D4AF37] border-[#0A1F17] font-semibold"
+                        : "bg-white text-stone-700 border-[#E8DEC9]"
+                    }`}
+                  >
+                    <span>{s.label}</span>
+                    {sortBy === s.id && <Check className="w-3.5 h-3.5 text-[#D4AF37]" />}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {/* Brand Filter */}
+            <div className="space-y-2">
+              <span className="text-[11px] uppercase tracking-wider font-bold text-stone-600">
+                Exhibition Brand
+              </span>
+              <div className="flex flex-wrap gap-2 text-xs">
+                {brandList.map((b) => (
+                  <button
+                    key={b}
+                    type="button"
+                    onClick={() => handleBrandChange(b)}
+                    className={`py-2 px-3 rounded-full border text-center font-medium min-h-[38px] transition-colors ${
+                      selectedBrand === b
+                        ? "bg-[#0A1F17] text-[#D4AF37] border-[#0A1F17] font-semibold shadow-xs"
+                        : "bg-white text-stone-700 border-[#E8DEC9]"
+                    }`}
+                  >
+                    {b === "All" ? "All Brands" : b}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {/* Category Filter */}
+            <div className="space-y-2">
+              <span className="text-[11px] uppercase tracking-wider font-bold text-stone-600">
+                Category
+              </span>
+              <div className="flex flex-wrap gap-2 text-xs">
+                {CATEGORIES.map((cat) => (
+                  <button
+                    key={cat}
+                    type="button"
+                    onClick={() => handleCategoryChange(cat)}
+                    className={`py-2 px-3 rounded-full border text-center font-medium min-h-[38px] transition-colors ${
+                      selectedCategory === cat
+                        ? "bg-[#0A1F17] text-[#D4AF37] border-[#0A1F17] font-semibold shadow-xs"
+                        : "bg-white text-stone-700 border-[#E8DEC9]"
+                    }`}
+                  >
+                    {cat}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {/* Action Buttons in Bottom Sheet */}
+            <div className="pt-2 flex items-center gap-3 border-t border-[#E8DEC9]">
+              <button
+                type="button"
+                onClick={resetFilters}
+                className="py-3 px-4 rounded-lg bg-stone-100 hover:bg-stone-200 text-stone-700 text-xs font-semibold min-h-[44px]"
+              >
+                Reset All
+              </button>
+              <button
+                type="button"
+                onClick={() => setIsFilterSheetOpen(false)}
+                className="flex-1 py-3 px-4 rounded-lg bg-[#0F2E22] hover:bg-[#1B4736] text-[#FAF7F2] text-xs uppercase tracking-wider font-bold text-center border border-[#D4AF37]/50 shadow-md min-h-[44px]"
+              >
+                Show {filteredProducts.length} Results
+              </button>
+            </div>
+          </div>
+        </div>
       )}
     </section>
   );

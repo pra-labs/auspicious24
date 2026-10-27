@@ -11,7 +11,7 @@ export default function FloatingFestiveTrayBadge() {
   if (totalCount === 0) return null;
 
   return (
-    <div className="fixed bottom-22 right-4 sm:bottom-24 sm:right-6 z-40 animate-in fade-in slide-in-from-bottom-4 duration-300">
+    <div className="fixed bottom-36 sm:bottom-24 right-4 sm:right-6 z-40 animate-in fade-in slide-in-from-bottom-4 duration-300">
       <button
         type="button"
         onClick={openTray}

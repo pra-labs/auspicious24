@@ -8,10 +8,10 @@ export default function FloatingWhatsApp() {
   const [isOpen, setIsOpen] = useState(false);
 
   return (
-    <div className="fixed bottom-16 sm:bottom-6 right-4 sm:right-6 z-50 flex flex-col items-end">
+    <div className="fixed bottom-20 sm:bottom-6 right-4 sm:right-6 z-40 flex flex-col items-end pointer-events-none">
       {/* Quick Menu Popover */}
       {isOpen && (
-        <div className="mb-3 w-76 sm:w-80 bg-white rounded-2xl sm:rounded-3xl shadow-2xl border border-[#D4AF37]/60 overflow-hidden animate-in slide-in-from-bottom-3 duration-200">
+        <div className="pointer-events-auto mb-3 w-72 sm:w-80 bg-white rounded-2xl sm:rounded-3xl shadow-2xl border border-[#D4AF37]/60 overflow-hidden animate-in slide-in-from-bottom-3 duration-200">
           {/* Header */}
           <div className="bg-gradient-to-r from-[#0A1F17] via-[#0F2E22] to-[#0A1F17] p-3.5 sm:p-4 text-white flex items-center justify-between border-b border-[#D4AF37]/30">
             <div className="flex items-center gap-2 sm:gap-2.5">
@@ -110,17 +110,16 @@ export default function FloatingWhatsApp() {
         </div>
       )}
 
-      {/* Floating Action Button with min 48px hit area and pulsing indicator */}
+      {/* Floating Action Button: w-12 h-12 on mobile (48px) and w-14 h-14 on desktop (56px) */}
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="group flex items-center justify-center gap-2 bg-[#25D366] hover:bg-[#20BA5A] text-white p-3 sm:px-4 sm:py-3.5 rounded-full shadow-lg hover:shadow-2xl transition-all duration-300 active:scale-95 min-h-[48px] min-w-[48px]"
+        className="pointer-events-auto relative group flex items-center justify-center bg-[#25D366] hover:bg-[#20BA5A] text-white w-12 h-12 sm:w-14 sm:h-14 rounded-full shadow-lg hover:shadow-2xl transition-all duration-300 active:scale-95 shrink-0"
         aria-label="Open WhatsApp live chat options"
+        title="Chat with Auspicious24 on WhatsApp"
       >
-        <MessageCircle className="w-5 h-5 sm:w-6 sm:h-6 fill-white shrink-0 group-hover:scale-110 transition-transform" />
-        <span className="hidden sm:inline text-xs font-bold tracking-wide">
-          Chat on WhatsApp
-        </span>
+        <MessageCircle className="w-6 h-6 sm:w-7 sm:h-7 fill-white shrink-0 group-hover:scale-110 transition-transform" />
         <span className="w-2.5 h-2.5 rounded-full bg-emerald-100 animate-ping absolute top-1 right-1" />
+        <span className="sr-only">Chat on WhatsApp</span>
       </button>
     </div>
   );

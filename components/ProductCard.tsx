@@ -6,7 +6,7 @@ import Image from 'next/image';
 import { Product, formatINR, cleanCardDescription, getProductMetadataPill } from '@/lib/catalog';
 import { getWhatsAppOrderUrl, getWhatsAppShareUrl } from '@/lib/whatsapp';
 import { useFestiveTray } from '@/context/FestiveTrayContext';
-import { MessageCircle, Eye, Share2, Plus, ShoppingBag, Check } from 'lucide-react';
+import { MessageCircle, Eye, Share2, ShoppingBag, Check } from 'lucide-react';
 
 interface ProductCardProps {
   product: Product;
@@ -83,13 +83,13 @@ export default function ProductCard({ product, onQuickView }: ProductCardProps) 
             alt={product.title}
             fill
             sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
-            className="object-cover object-center transition-all duration-500 group-hover:scale-105"
+            className="object-cover object-center transition-transform duration-300 ease-in-out group-hover:scale-105"
           />
         </Link>
 
         {/* Brand / Collection Pill Top-Left */}
-        <div className="absolute top-1.5 sm:top-2.5 left-1.5 sm:left-2.5 z-10 flex flex-col gap-1 items-start max-w-[80%]">
-          <span className="text-[8px] sm:text-[10px] uppercase tracking-wider font-bold px-1.5 sm:px-2 py-0.5 rounded-full bg-[#0A1F17]/90 text-[#D4AF37] border border-[#D4AF37]/30 backdrop-blur-xs truncate">
+        <div className="absolute top-2 left-2 z-10 flex flex-col gap-1 items-start max-w-[75%]">
+          <span className="text-[8px] sm:text-[10px] uppercase tracking-wider font-bold px-2 py-0.5 rounded-full bg-[#0A1F17]/90 text-[#D4AF37] border border-[#D4AF37]/30 backdrop-blur-xs truncate max-w-full">
             {product.brand}
           </span>
           {product.badge && (
@@ -99,32 +99,37 @@ export default function ProductCard({ product, onQuickView }: ProductCardProps) 
           )}
         </div>
 
-        {/* Floating Quick Action Icons Top-Right */}
-        <div className="absolute top-1.5 sm:top-2.5 right-1.5 sm:right-2.5 z-10 flex flex-col gap-1 opacity-90 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity">
+        {/* Tactile Floating Action Buttons Top-Right */}
+        <div className="absolute top-2 right-2 z-10 flex flex-col items-end gap-1.5">
+          {/* Elegant Floating Tray Button (Touch target min 44x44px) */}
+          <button
+            type="button"
+            onClick={handleAddToTray}
+            className={`p-2.5 rounded-full shadow-md backdrop-blur-md transition-all duration-300 min-h-[44px] min-w-[44px] flex items-center justify-center active:scale-90 ${
+              justAdded
+                ? 'bg-[#0F2E22] text-[#D4AF37] ring-2 ring-[#D4AF37]'
+                : 'bg-white/95 hover:bg-white text-stone-800 hover:text-[#0F2E22] hover:shadow-lg'
+            }`}
+            title={justAdded ? 'Added to Festive Tray' : 'Add to Festive Tray'}
+            aria-label={`Add ${product.title} to Festive Tray`}
+          >
+            {justAdded ? (
+              <Check className="w-4 h-4 text-[#D4AF37]" />
+            ) : (
+              <ShoppingBag className="w-4 h-4 text-[#0F2E22]" />
+            )}
+          </button>
+
+          {/* Quick Share on WhatsApp (Desktop & Mobile) */}
           <button
             type="button"
             onClick={handleShare}
-            className="p-1 sm:p-1.5 rounded-full bg-white/90 backdrop-blur-sm text-stone-700 hover:text-[#0F2E22] hover:bg-white transition-all shadow-xs min-h-[32px] min-w-[32px] flex items-center justify-center"
+            className="p-2 rounded-full bg-white/90 backdrop-blur-xs text-stone-600 hover:text-[#0F2E22] hover:bg-white transition-all shadow-xs min-h-[36px] min-w-[36px] sm:min-h-[44px] sm:min-w-[44px] flex items-center justify-center opacity-85 hover:opacity-100"
             title="Share on WhatsApp"
             aria-label="Share product"
           >
             <Share2 className="w-3.5 h-3.5" />
           </button>
-          {onQuickView && (
-            <button
-              type="button"
-              onClick={(e) => {
-                e.preventDefault();
-                e.stopPropagation();
-                onQuickView(product);
-              }}
-              className="hidden sm:flex p-1.5 rounded-full bg-white/90 backdrop-blur-sm text-stone-700 hover:text-[#0F2E22] hover:bg-white transition-all shadow-xs items-center justify-center min-h-[32px] min-w-[32px]"
-              title="Quick View"
-              aria-label="Quick View"
-            >
-              <Eye className="w-3.5 h-3.5" />
-            </button>
-          )}
         </div>
 
         {/* Hover Quick View Button bar (Desktop only) */}
@@ -145,90 +150,63 @@ export default function ProductCard({ product, onQuickView }: ProductCardProps) 
       </div>
 
       {/* Product Content Details */}
-      <div className="p-2.5 sm:p-4 flex flex-col flex-1 justify-between space-y-2 sm:space-y-3">
+      <div className="p-2.5 sm:p-4 flex flex-col flex-1 justify-between space-y-2">
         <div className="space-y-1">
-          <div className="text-[9px] sm:text-[10px] uppercase tracking-wider text-stone-500 font-medium truncate">
+          <div className="text-[9px] sm:text-[10px] uppercase tracking-wider text-stone-600 font-semibold truncate">
             {product.category}
           </div>
           <Link
             href={`/product/${product.handle}`}
             className="block group/title"
           >
-            <h3 className="font-serif text-xs sm:text-base font-medium text-stone-900 line-clamp-2 group-hover/title:text-[#0F2E22] transition-colors leading-snug">
+            <h3 className="font-serif text-xs sm:text-base font-semibold text-stone-900 line-clamp-2 group-hover/title:text-[#0F2E22] transition-colors leading-snug">
               {product.title}
             </h3>
           </Link>
-          {/* Subtle 1-line description, hidden on very small cards to save screen height */}
-          <p className="hidden sm:block text-[11px] text-stone-500 line-clamp-1 leading-relaxed">
+          {/* Darkened description to #4B5563 for WCAG AAA contrast */}
+          <p className="hidden sm:block text-[11px] text-[#4B5563] line-clamp-1 leading-relaxed">
             {cleanedDesc || product.title}
           </p>
         </div>
 
         {/* Compact Metadata Pill right above Price */}
-        <div className="pt-1.5 border-t border-[#E8DEC9]/50 space-y-1.5 sm:space-y-2">
+        <div className="pt-1.5 border-t border-[#E8DEC9]/60 space-y-2">
           {metadataPill && (
             <div className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-[#FAF7F2] border border-[#E8DEC9] text-[9px] sm:text-[10px] uppercase tracking-wider text-[#0F2E22] font-semibold truncate max-w-full">
-              <span className="w-1 h-1 sm:w-1.5 sm:h-1.5 rounded-full bg-[#D4AF37] shrink-0" />
+              <span className="w-1.5 h-1.5 rounded-full bg-[#D4AF37] shrink-0" />
               <span className="truncate">{metadataPill}</span>
             </div>
           )}
 
-          {/* Pricing & Split Dual CTAs: Responsive Mobile Icon & Desktop Buttons */}
-          <div className="flex items-center justify-between gap-1.5">
-            <div>
-              <div className="flex items-baseline gap-1">
-                <span className="font-serif text-sm sm:text-lg font-bold text-[#0F2E22]">
-                  {formatINR(activePrice)}
-                </span>
-                {activeOriginalPrice && activeOriginalPrice > activePrice && (
-                  <span className="text-[10px] sm:text-xs text-stone-400 line-through">
-                    {formatINR(activeOriginalPrice)}
-                  </span>
-                )}
-              </div>
-              {discountPercent && (
-                <span className="text-[9px] sm:text-[10px] text-emerald-700 font-semibold uppercase">
-                  {discountPercent}% Off
-                </span>
-              )}
-            </div>
-
-            {/* Action Buttons: Minimalist Icon-based on Mobile, Full on Desktop */}
-            <div className="flex items-center gap-1">
-              {/* Add to Festive Tray Button */}
-              <button
-                type="button"
-                onClick={handleAddToTray}
-                className={`p-2 rounded-sm border transition-all text-xs font-semibold flex items-center justify-center min-h-[36px] min-w-[36px] sm:min-h-[38px] ${
-                  justAdded
-                    ? 'bg-[#0F2E22] text-[#D4AF37] border-[#0F2E22]'
-                    : 'bg-white hover:bg-[#FAF7F2] text-stone-700 hover:text-[#0F2E22] border-[#E8DEC9] hover:border-[#D4AF37]'
-                }`}
-                title="Add to Festive Tray"
-                aria-label={`Add ${product.title} to Festive Tray`}
-              >
-                {justAdded ? (
-                  <Check className="w-4 h-4 text-[#D4AF37]" />
-                ) : (
-                  <Plus className="w-4 h-4" />
-                )}
-                <span className="hidden xl:inline text-[11px] ml-1">Tray</span>
-              </button>
-
-              {/* Order on WhatsApp CTA: Icon only on mobile grid, full text on desktop */}
-              <a
-                href={orderUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-flex items-center justify-center gap-1.5 p-2 sm:px-3 sm:py-2 bg-[#25D366] hover:bg-[#20BA5A] text-white text-[11px] sm:text-xs font-bold rounded-sm transition-all shadow-xs hover:shadow-md shrink-0 min-h-[36px] min-w-[36px] sm:min-h-[38px]"
-                title="Order on WhatsApp"
-                aria-label={`Order ${product.title} on WhatsApp`}
-              >
-                <MessageCircle className="w-4 h-4 fill-current shrink-0" />
-                <span className="hidden sm:inline whitespace-nowrap">Order on WhatsApp</span>
-              </a>
-            </div>
+          {/* Pricing Row */}
+          <div className="flex items-baseline gap-1.5 flex-wrap">
+            <span className="font-serif text-sm sm:text-lg font-bold text-[#0F2E22]">
+              {formatINR(activePrice)}
+            </span>
+            {activeOriginalPrice && activeOriginalPrice > activePrice && (
+              <span className="text-[10px] sm:text-xs text-stone-500 line-through">
+                {formatINR(activeOriginalPrice)}
+              </span>
+            )}
+            {discountPercent && (
+              <span className="text-[9px] sm:text-[10px] text-emerald-800 font-bold uppercase tracking-wider">
+                {discountPercent}% Off
+              </span>
+            )}
           </div>
+
+          {/* Undeniably Primary Full-Width WhatsApp CTA with min 44px touch target */}
+          <a
+            href={orderUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="w-full py-2.5 px-3 bg-[#25D366] hover:bg-[#20BA5A] text-white text-xs font-bold rounded-md flex items-center justify-center gap-1.5 shadow-xs hover:shadow-md transition-all duration-200 active:scale-[0.98] min-h-[44px]"
+            title="Order on WhatsApp"
+            aria-label={`Order ${product.title} on WhatsApp`}
+          >
+            <MessageCircle className="w-4 h-4 fill-white shrink-0" />
+            <span className="whitespace-nowrap font-bold tracking-wide">Order on WhatsApp</span>
+          </a>
         </div>
       </div>
     </div>
