@@ -83,7 +83,7 @@ export default function Hero() {
                 href="#catalog"
                 className="px-7 py-3.5 bg-[#0F2E22] hover:bg-[#1B4736] text-[#FAF7F2] text-xs uppercase tracking-[0.2em] font-semibold transition-all border border-[#D4AF37]/60 shadow-lg hover:shadow-xl inline-flex items-center justify-center gap-2 rounded-sm text-center"
               >
-                <span>Explore 65+ Treasures</span>
+                <span>Explore 68+ Treasures</span>
                 <ArrowRight className="w-4 h-4 text-[#D4AF37]" />
               </a>
 
@@ -114,6 +114,7 @@ export default function Hero() {
                     src="/images/products/parsi-work-on-steel-grey-suit/IMG_2942.jpg"
                     alt="Sifti Creations Handcrafted Designer Suit"
                     fill
+                    priority
                     sizes="(max-width: 640px) 50vw, 30vw"
                     className="object-cover object-center group-hover:scale-105 transition-transform duration-500"
                   />
@@ -131,7 +132,7 @@ export default function Hero() {
                       Parsi Gara on Steel Grey
                     </div>
                     <div className="text-[10px] text-stone-300">
-                      ₹4,200 • 3-Pc Unstitched
+                      ₹4,999 • 3-Pc Unstitched
                     </div>
                   </div>
                 </div>
@@ -147,6 +148,7 @@ export default function Hero() {
                     src="/images/products/luxury-silver-peacock-decorative-serving-bowl-dryfruit-filled/30.jpg"
                     alt="Silver Peacock Decorative Dry Fruit Hamper"
                     fill
+                    priority
                     sizes="(max-width: 640px) 50vw, 25vw"
                     className="object-cover object-center group-hover:scale-105 transition-transform duration-500"
                   />
@@ -161,7 +163,7 @@ export default function Hero() {
                       Silver Peacock Hamper
                     </div>
                     <div className="text-[9px] text-[#D4AF37] font-semibold">
-                      ₹2,499 • Nut Filled
+                      ₹1,299 • Nut Filled
                     </div>
                   </div>
                 </div>
@@ -177,6 +179,7 @@ export default function Hero() {
                     src="/images/products/golden-bird-decorative-glass-bowl-with-ornate-metal-stand-premium-festive-serve-ware/27.jpg"
                     alt="Golden Bird Ornate Stand Bowl by Güzel"
                     fill
+                    priority
                     sizes="(max-width: 640px) 50vw, 25vw"
                     className="object-cover object-center group-hover:scale-105 transition-transform duration-500"
                   />
